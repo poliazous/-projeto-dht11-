@@ -1,0 +1,41 @@
+# Arduino
+*.hex
+*.eep
+*.elf
+*.map
+
+# Build files
+build/
+*.o
+*.a
+
+# IDE files
+.vscode/
+.vs/
+*.suo
+*.user
+*.sln.docstates
+
+# MacOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# Temporary files
+*.tmp
+*.bak
+*.swp
+*~
+
+# Libraries (se você não quiser versionar)
+# libraries/
+
+# Credentials (NUNCA commitar senhas/tokens)
+credentials.h
+secrets.h
+config_private.h
