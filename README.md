@@ -84,7 +84,7 @@ Abrir um Pull Request
 📄 Licença
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
 👤 Autor
-Seu Nome - @seu_usuario
+Poliana Souza - @poliazous
 🔗 Links Úteis
 
 Documentação Arduino
