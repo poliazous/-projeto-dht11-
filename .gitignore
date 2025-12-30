@@ -32,6 +32,33 @@ Desktop.ini
 *.swp
 *~
 
+# C++/Arduino/PlatformIO
+*.elf
+*.bin
+*.pioenvs/
+*.piolibdeps/
+.pio/
+build/
+
+# C#/.NET
+bin/
+obj/
+*.suo
+*.user
+*.cache
+*.dll
+*.exe
+
+# Python
+__pycache__/
+*.pyc
+venv/
+.env
+
+# Sistema
+.DS_Store
+Thumbs.db
+
 # Libraries (se você não quiser versionar)
 # libraries/
 
