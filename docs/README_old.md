@@ -1,57 +1,3 @@
-\## 📊 Versões do Projeto
-
-
-
-\### 🔥 \*\*Versão Atual (v2.0)\*\*
-
-\- \*\*Firmware ESP32\*\*: `firmware/dht11\_sensor` - Código C++ aprimorado
-
-\- \*\*Software Desktop\*\*: `software/csharp/` - Interface C#
-
-
-
-\### 📂 \*\*Histórico de Versões\*\*
-
-\- \*\*v1.0\*\*: `releases/cpp\_v1\_antigo/` - Código C++ inicial
-
-\- \*\*v1.0 Python\*\*: `software/python/` - Scripts Python
-
-
-
-\## 🚀 Como Usar
-
-
-
-\### Versão 2.0 (Recomendada)
-
-```bash
-
-\# Firmware dht11\_sensor
-
-cd firmware/dht11\_sensor
-
-\# Abra no Arduino IDE ou PlatformIO
-
-
-
-\# Software C#
-
-cd software/csharp
-
-\# Abra no Visual Studio
-
-
-
-Versão 1.0 (Legado)
-
-bash
-
-cd releases/cpp\_v1\_antigo
-
-============================================================================
-
-
-
 🌡️ Sensor DHT11 - Monitor de Temperatura e Umidade
 Mostrar Imagem
 Mostrar Imagem
@@ -81,12 +27,11 @@ VCC    →    5V
 GND    →    GND
 DATA   →    Pin 5
 🚀 Como Usar
-
 1. Clone o repositório
-   bashgit clone https://github.com/seu-usuario/projeto-dht11.git
-   cd projeto-dht11
+bashgit clone https://github.com/seu-usuario/projeto-dht11.git
+cd projeto-dht11
 2. Abra o arquivo no Arduino IDE
-   bash# Abra o arquivo src/dht11\_sensor.ino
+bash# Abra o arquivo src/dht11_sensor.ino
 3. Configure a placa
 
 Tools → Board → Selecione sua placa (Arduino Uno, ESP32, etc.)
@@ -120,16 +65,12 @@ Para alterar o intervalo de leitura (padrão: 3 segundos):
 cppdelay(3000);  // Altere o valor em milissegundos
 🐛 Solução de Problemas
 ProblemaSolução"Erro na leitura do sensor!"Verifique as conexões, especialmente o pino DATAValores sempre iguaisSensor pode estar danificado ou com mal contatoNada aparece no Monitor SerialVerifique se a velocidade está em 115200 baudErro de compilaçãoInstale as bibliotecas DHT e Adafruit Unified Sensor
-
-
 📝 Especificações do DHT11
 
 Faixa de temperatura: 0°C a 50°C (±2°C)
 Faixa de umidade: 20% a 90% (±5%)
 Tempo de resposta: ~2 segundos
 Tensão de operação: 3.3V a 5V
-
-
 
 🤝 Contribuindo
 Contribuições são bem-vindas! Sinta-se à vontade para:
@@ -140,20 +81,10 @@ Commit suas mudanças (git commit -m 'Adiciona nova feature')
 Push para a branch (git push origin feature/MinhaFeature)
 Abrir um Pull Request
 
-
-
 📄 Licença
 Este projeto está sob a licença MIT. Veja o arquivo LICENSE para mais detalhes.
-
-
-👥 Colaboradores
-
-Poliana Souza 
-
-Cleytoni D. Paula 
-
-
-
+👤 Autor
+Poliana Souza - @poliazous
 🔗 Links Úteis
 
 Documentação Arduino
@@ -161,6 +92,4 @@ Datasheet DHT11
 Biblioteca DHT
 
 
-
 ⭐ Se este projeto foi útil, considere dar uma estrela!
-
