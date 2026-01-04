@@ -6,60 +6,121 @@
 #define DHTTYPE DHT11
 
 // Configuração do Ponto de Acesso (AP)
-const char* ssid = "ESP32_DHT_AP";  // Nome da rede Wifi da ESP32
-const char* password = "senhasegura"; // Senha 8 caracteres
+const char* ssid = "ESP32_DHT_AP";
+const char* password = "senhasegura";
 
 DHT dht(DHTPIN, DHTTYPE);
-WebServer server(80); // O servidor HTTP irá rodar na porta 80
+WebServer server(80);
+
+// Variável para controle de tempo
+unsigned long lastUpdate = 0;
+const unsigned long UPDATE_INTERVAL = 3000;
 
 void setup() {
   Serial.begin(115200);
   dht.begin();
 
-  // 4. Iniciar o Ponto de Acesso
+  // Iniciar AP
   Serial.print("Configurando Ponto de Acesso (AP)... ");
   WiFi.softAP(ssid, password);
   
-  // 5. Exibir o IP local (geralmente será 192.168.4.1)
   IPAddress IP = WiFi.softAPIP();
   Serial.print("AP IP address: ");
   Serial.println(IP);
 
-  // 6. Configurar as rotas do Servidor (o que fazer quando o navegador acessa o IP)
-  server.on("/", handleRoot); // Quando alguém acessar o IP (a raiz /), chame a função handleRoot
-  server.begin(); // Inicia o servidor
+  // Configurar rotas
+  server.on("/", handleRoot); // Página HTML com JavaScript SSE
+  server.on("/stream", handleStream); // Endpoint SSE
+  server.begin();
   Serial.println("HTTP server iniciado.");
 }
 
 void loop() {
-  server.handleClient(); // Permanece escutando por requisições HTTP
-  delay(3000); // Não usamos o loop para leitura, vamos ler apenas na requisição para ter dados frescos.
+  server.handleClient();
+  
+  // Verifica se é hora de enviar dados (opcional, para limpar buffer)
+  if (millis() - lastUpdate > UPDATE_INTERVAL) {
+    lastUpdate = millis();
+    // Aqui não enviamos ativamente, SSE é baseado em requisição contínua
+  }
 }
 
-// Função para ler o sensor e formatar a resposta
+// Página HTML com JavaScript para receber SSE
 void handleRoot() {
-  // 1. Leitura do Sensor DHT11
-  float h = dht.readHumidity();
-  float t = dht.readTemperature();
+  String html = R"rawliteral(
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DHT11 - Tempo Real</title>
+    <meta charset="UTF-8">
+    <style>
+        body { font-family: Arial; text-align: center; margin: 50px; }
+        .data { font-size: 24px; margin: 20px; padding: 20px; border: 2px solid #333; }
+        .temp { color: red; }
+        .hum { color: blue; }
+    </style>
+</head>
+<body>
+    <h1>Monitor DHT11 - Tempo Real</h1>
+    <div class="data">
+        <h2>Temperatura: <span id="temp" class="temp">--</span> °C</h2>
+        <h2>Umidade: <span id="hum" class="hum">--</span> %</h2>
+    </div>
+    <div id="status"></div>
+    
+    <script>
+        const eventSource = new EventSource('/stream');
+        
+        eventSource.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            document.getElementById('temp').textContent = data.temperatura.toFixed(1);
+            document.getElementById('hum').textContent = data.umidade.toFixed(1);
+            document.getElementById('status').innerHTML = 
+                'última atualização: ' + new Date().toLocaleTimeString();
+        };
+        
+        eventSource.onerror = function() {
+            document.getElementById('status').innerHTML = 
+                'Conexão perdida. Tentando reconectar...';
+        };
+    </script>
+</body>
+</html>
+)rawliteral";
   
-  // 2. Checagem de Erros de Leitura
-  if (isnan(h) || isnan(t)) {
-    Serial.println("Falha ao ler o sensor DHT!");
-    server.send(500, "text/plain", "Falha ao ler o sensor DHT!");
-    return;
+  server.send(200, "text/html", html);
+}
+
+// Endpoint SSE que mantém conexão aberta
+void handleStream() {
+  server.setContentLength(CONTENT_LENGTH_UNKNOWN);
+  server.send(200, "text/event-stream; charset=utf-8", "");
+  
+  // Envia dados periodicamente
+  while (true) {
+    float h = dht.readHumidity();
+    float t = dht.readTemperature();
+    
+    if (!isnan(h) && !isnan(t)) {
+      String jsonResponse = "{\"temperatura\": " + String(t) + 
+                           ", \"umidade\": " + String(h) + "}";
+      
+      // Formato SSE
+      server.sendContent("data: " + jsonResponse + "\n\n");
+      Serial.print("Dados enviados via SSE: ");
+      Serial.println(jsonResponse);
+    }
+    
+    delay(3000); // Aguarda 3 segundos
+    
+    // Verifica se cliente ainda está conectado
+    if (!server.client().connected()) {
+      break;
+    }
   }
+}
 
-  // 3. Criação da Estrutura JSON (para ser fácil de ler pelo C# ou qualquer cliente)
-  // Exemplo: {"temperatura": 25.5, "umidade": 60.2}
-  String jsonResponse = "{";
-  jsonResponse += "\"temperatura\": " + String(t);
-  jsonResponse += ", \"umidade\": " + String(h);
-  jsonResponse += "}";
-
-  // 4. Envio da Resposta HTTP para o cliente (navegador/C#)
-  server.sendHeader("Access-Control-Allow-Origin", "*"); // Permite que qualquer cliente acesse (bom para testes)
-  server.send(200, "application/json", jsonResponse);
-  
-  Serial.print("Dados enviados: ");
-  Serial.println(jsonResponse);
+// Para rotas não encontradas
+void handleNotFound() {
+  server.send(404, "text/plain", "Página não encontrada");
 }
