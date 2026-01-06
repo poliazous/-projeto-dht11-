@@ -119,7 +119,7 @@ void handleStream() {
     }
   }
 }
-
+// Adiconado
 // Para rotas não encontradas
 void handleNotFound() {
   server.send(404, "text/plain", "Página não encontrada");
